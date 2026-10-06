@@ -148,7 +148,7 @@ Il2Cpp.perform(() => {
   const Physics = UnityEnginePhysics.class("UnityEngine.Physics");
   const SystemObject = Il2Cpp.corlib.class("System.Object");
   const bybyeeeClass = AssemblyCSharp.class("bybyeee");
-  const PlayfabLogin = AssemblyCsharp.class("PlayFabLogin");
+  const PlayfabLogin = AssemblyCsharp.class("PlayfabManager");
 
   const Canvas = UnityEngineUIModule.class("UnityEngine.Canvas");
   const CanvasScaler = UnityEngineUI.class("UnityEngine.UI.CanvasScaler");
