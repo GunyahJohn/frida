@@ -300,6 +300,83 @@ Il2Cpp.perform(() => {
 
     }
 
+function enableByName(name: string): boolean {
+
+
+    const unity = Il2Cpp.domain.assembly("UnityEngine.CoreModule").image;
+
+
+    const GameObject = unity.class("UnityEngine.GameObject");
+
+
+    const Resources = unity.class("UnityEngine.Resources");
+
+
+
+
+
+    // FindObjectsOfTypeAll includes inactive objects
+
+
+    const all = Resources.method<Il2Cpp.Array<Il2Cpp.Object>>("FindObjectsOfTypeAll")
+
+
+        .invoke(GameObject.type.object);
+
+
+
+
+
+    let found = false;
+
+
+    for (const go of all) {
+
+
+        if (go.isNull()) continue;
+
+
+        const goName = go.method<Il2Cpp.String>("get_name").invoke().content;
+
+
+        if (goName !== name) continue;
+
+
+
+
+
+        // Skip prefabs/assets: scene objects have a valid scene handle
+
+
+        const scene = go.method<Il2Cpp.ValueType>("get_scene").invoke();
+
+
+        const valid = scene.method<boolean>("IsValid").invoke();
+
+
+        if (!valid) continue;
+
+
+
+
+
+        go.method("SetActive").invoke(true);
+
+
+        console.log(`Enabled ${name}`);
+
+
+        found = true;
+
+
+    }
+
+
+    return found;
+
+
+}
+
     function PlayfabPatcher() {
 
         const login = getLogin();
@@ -307,12 +384,13 @@ Il2Cpp.perform(() => {
 
         if (!login) return;
 
-        handleList(login.field<Il2Cpp.Object>("specialitems").value, true);
+        //handleList(login.field<Il2Cpp.Object>("specialitems").value, true);
 
 
-        handleList(login.field<Il2Cpp.Object>("disableitems").value, false);
+        //handleList(login.field<Il2Cpp.Object>("disableitems").value, false);
 
-
+        enableByName("mody");
+        enableByName("Tvboy");
     }
     Il2Cpp.mainThread.schedule(PlayfabPatcher);
 
@@ -1525,13 +1603,6 @@ try {
         keepOn: false,
       }),
       new ButtonInfo({
-        buttonText: "Spoof ID",
-        method: () => {
-          spoofID()
-        },
-        keepOn: false,
-      }),
-      new ButtonInfo({
         buttonText: "Rig Spam [G]",
         method: () => {
           RigSpam()
@@ -1594,7 +1665,7 @@ try {
     ],
 [ // Credits
       new ButtonInfo({
-        buttonText: "GunyahJohn",
+        buttonText: "that one guy",
         method: () => {
 		// oil up
         },
@@ -1602,7 +1673,7 @@ try {
       }),   
 
       new ButtonInfo({
-        buttonText: "Claude",
+        buttonText: "sside",
         method: () => {
 		// oil up
         },
@@ -1748,6 +1819,6 @@ try {
 
     return this.method("Update").invoke();
   };
-  console.log(`yo menu loaded lels have fun`);
-          
+  console.log(`yo, supporter menu loaded lels have fun`);
+
 }, "main");
