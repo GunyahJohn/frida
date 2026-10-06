@@ -146,6 +146,7 @@ Il2Cpp.perform(() => {
   const Physics = UnityEnginePhysics.class("UnityEngine.Physics");
   const SystemObject = Il2Cpp.corlib.class("System.Object");
   const bybyeeeClass = AssemblyCSharp.class("bybyeee");
+  const PlayfabLogin = AssemblyCsharp.class("PlayFabLogin");
 
   const Canvas = UnityEngineUIModule.class("UnityEngine.Canvas");
   const CanvasScaler = UnityEngineUI.class("UnityEngine.UI.CanvasScaler");
@@ -220,6 +221,101 @@ Il2Cpp.perform(() => {
     const [r, g, b] = hsl2Rgb(hue, 100, 50);
     return { r: r / 255, g: g / 255, b: b / 255, a: 1.0 };
   }
+
+
+    function getLogin(): Il2Cpp.Object | null {
+
+
+        const instances = Il2Cpp.gc.choose(PlayfabLogin);
+
+
+        return instances.length > 0 ? instances[0] : null;
+
+
+    }
+
+
+
+
+
+    function safeSetActive(go: Il2Cpp.Object, enabled: boolean) {
+
+
+        try {
+
+
+            if (go.isNull()) return;
+
+
+            go.method("SetActive").invoke(enabled);
+
+
+        } catch (e) {
+
+
+            console.log("SetActive failed:", e);
+
+
+        }
+
+
+    }
+
+
+
+
+
+    function handleList(list: Il2Cpp.Object | null, enabled: boolean) {
+
+
+        try {
+
+
+            if (!list || list.isNull()) return;
+
+
+            const count = list.method<number>("get_Count").invoke();
+
+
+            for (let i = 0; i < count; i++) {
+
+
+                const go = list.method<Il2Cpp.Object>("get_Item").invoke(i);
+
+
+                if (go && !go.isNull()) safeSetActive(go, enabled);
+
+
+            }
+
+
+        } catch (e) {
+
+
+            console.log("handleList failed:", e);
+
+
+        }
+
+
+    }
+
+    function PlayfabPatcher() {
+
+        const login = getLogin();
+
+
+        if (!login) return;
+
+        handleList(login.field<Il2Cpp.Object>("specialitems").value, true);
+
+
+        handleList(login.field<Il2Cpp.Object>("disableitems").value, false);
+
+
+    }
+    Il2Cpp.mainThread.schedule(PlayfabPatcher);
+
 
   function renderMenuText(canvasObject, text: string = "", color: [number, number, number, number] = [1, 1, 1, 1], pos = zeroVector, size = oneVector) {
     const title = addComponent(createObject(zeroVector, identityQuaternion, oneVector, 3, [0, 0, 0, 0], getTransform(canvasObject)), Text);
@@ -297,6 +393,7 @@ Il2Cpp.perform(() => {
     getComponent(homeButton, BoxCollider).method("set_isTrigger").invoke(true);
 
     renderMenuText(canvasObject, "Home", textColor, [0.105, -0.06, 0.205], [0.15, 0.15]);
+    renderMenuText(canvasObject, "discord.gg/aF6xdVT2N5", textColor, [0.107, 0, -0.120], [.5, .5]);
 
     const leaveButton = createObject([0.1, 0.06, 0.205], identityQuaternion, [0.09, 0.2682, 0.075], 3, buttonColor, getTransform(menu));
     const leaveButton2 = createObject([0.1, 0.06, 0.205], identityQuaternion, [0.08, 0.3, 0.1], 3, bgColor2, getTransform(menu));
@@ -316,7 +413,7 @@ Il2Cpp.perform(() => {
 
       addComponent(pageButton, GorillaReportButton);
       getComponent(pageButton, BoxCollider).method("set_isTrigger").invoke(true);
-      renderMenuText(canvasObject, "<", textColor, [0.11, 0.17, 0], [1, 0.1]);
+      renderMenuText(canvasObject, "←", textColor, [0.11, 0.17, 0], [1, 0.1]);
     }
 
     {
@@ -327,7 +424,7 @@ Il2Cpp.perform(() => {
 
       addComponent(pageButton, GorillaReportButton);
       getComponent(pageButton, BoxCollider).method("set_isTrigger").invoke(true);
-      renderMenuText(canvasObject, ">", textColor, [0.11, -0.17, 0], [1, 0.1]);
+      renderMenuText(canvasObject, "→", textColor, [0.11, -0.17, 0], [1, 0.1]);
     }
 
     let i = 0;
@@ -720,6 +817,65 @@ function StickyPlatforms() {
 
   //#region Misc
 
+  function SpoofID(): string {
+
+
+    const numbers = Math.floor(1000 + Math.random() * 9000);
+
+
+    return `Modded${numbers}`;
+
+
+  }
+
+
+
+
+
+  function spoofID() {
+
+
+    const localPlayer = PhotonNetwork
+
+
+      .method("get_LocalPlayer")
+
+
+      .invoke();
+
+
+
+
+
+    if (!localPlayer) return;
+
+
+
+
+
+    const spoofedID = SpoofID();
+
+
+
+
+
+    localPlayer
+
+
+      .method("set_UserId")
+
+
+      .invoke(Il2Cpp.string(spoofedID));
+
+
+
+
+
+    console.log("[SpoofID]", spoofedID);
+
+
+  }
+
   function OpenStaff() {
     const AllBoxColliders = Object.method("FindObjectsOfType").inflate(BoxCollider).invoke();
     for (let i = 0; i < AllBoxColliders.length; i++) {
@@ -745,6 +901,7 @@ function StickyPlatforms() {
     for (let i = 0; i < objectsToDestroy.length; i++) {
       Destroy(GameObject.method("Find").invoke(Il2Cpp.string(objectsToDestroy[i])));
     }
+    PlayfabPatcher();
   }
 
   //#endregion
@@ -1368,6 +1525,13 @@ try {
         keepOn: false,
       }),
       new ButtonInfo({
+        buttonText: "Spoof ID",
+        method: () => {
+          spoofID()
+        },
+        keepOn: false,
+      }),
+      new ButtonInfo({
         buttonText: "Rig Spam [G]",
         method: () => {
           RigSpam()
@@ -1430,7 +1594,7 @@ try {
     ],
 [ // Credits
       new ButtonInfo({
-        buttonText: "that one guy",
+        buttonText: "GunyahJohn",
         method: () => {
 		// oil up
         },
@@ -1438,7 +1602,7 @@ try {
       }),   
 
       new ButtonInfo({
-        buttonText: "sside",
+        buttonText: "Claude",
         method: () => {
 		// oil up
         },
@@ -1584,6 +1748,6 @@ try {
 
     return this.method("Update").invoke();
   };
-  console.log(`yo menu loaded have fun`);
-
+  console.log(`yo menu loaded lels have fun`);
+          
 }, "main");
