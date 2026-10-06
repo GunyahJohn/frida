@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 declare const Il2Cpp: any;
 declare const console: any;
 declare const System: any;
@@ -33,11 +35,11 @@ let time = 0.0;
 let previousNoclipKey = false;
 let perviousDestroyKey = false;
 
-let bgColor: [number, number, number, number] = [15 / 255, 0 / 255, 0 / 255, 1.0];
-let bgColor2: [number, number, number, number] = [40 / 255, 0 / 255, 0 / 255, 1.0];
-let textColor: [number, number, number, number] = [1.0, 0.85, 0.85, 1.0];
-let buttonColor: [number, number, number, number] = [100 / 255, 0 / 255, 10 / 255, 1.0];
-let buttonPressedColor: [number, number, number, number] = [200 / 255, 20 / 255, 20 / 255, 1.0];
+let bgColor: [number, number, number, number] = [0.0, 0.0, 0.0, 1.0];
+let bgColor2: [number, number, number, number] = [9.0, 9.0, 9.0, 1.0];
+let textColor: [number, number, number, number] = [1.0, 1.0, 1.0, 1.0];
+let buttonColor: [number, number, number, number] = [0.1, 0.1, 0.1, 1.0];
+let buttonPressedColor: [number, number, number, number] = [0.7, 0.7, 0.7, 1.0];
 
 let menuName: string = "Gunyah.lol";
 let themeIndex = 0;
@@ -93,12 +95,12 @@ class XRInputHandler {
 
   get leftControllerPrimaryButton(): boolean { return this.isButtonPressed(1, "PrimaryButton"); }
   get leftControllerSecondaryButton(): boolean { return this.isButtonPressed(1, "SecondaryButton"); }
-  get rightControllerPrimaryButton(): boolean { return this.isButtonPressed(1, "PrimaryButton"); }
-  get rightControllerSecondaryButton(): boolean { return this.isButtonPressed(1, "SecondaryButton"); }
+  get rightControllerPrimaryButton(): boolean { return this.isButtonPressed(2, "PrimaryButton"); }
+  get rightControllerSecondaryButton(): boolean { return this.isButtonPressed(2, "SecondaryButton"); }
   get leftGrab(): boolean { return this.isButtonPressed(1, "GripButton"); }
-  get rightGrab(): boolean { return this.isButtonPressed(1, "GripButton"); }
+  get rightGrab(): boolean { return this.isButtonPressed(2, "GripButton"); }
   get leftControllerTriggerButton(): boolean { return this.isButtonPressed(1, "TriggerButton"); }
-  get rightControllerTriggerButton(): boolean { return this.isButtonPressed(1, "TriggerButton"); }
+  get rightControllerTriggerButton(): boolean { return this.isButtonPressed(2, "TriggerButton"); }
   get controllerMenuButton(): boolean {
     return this.isButtonPressed(1, "MenuButton") || this.isButtonPressed(2, "MenuButton");
   }
@@ -221,179 +223,6 @@ Il2Cpp.perform(() => {
     const [r, g, b] = hsl2Rgb(hue, 100, 50);
     return { r: r / 255, g: g / 255, b: b / 255, a: 1.0 };
   }
-
-
-    function getLogin(): Il2Cpp.Object | null {
-
-
-        const instances = Il2Cpp.gc.choose(PlayfabLogin);
-
-
-        return instances.length > 0 ? instances[0] : null;
-
-
-    }
-
-
-
-
-
-    function safeSetActive(go: Il2Cpp.Object, enabled: boolean) {
-
-
-        try {
-
-
-            if (go.isNull()) return;
-
-
-            go.method("SetActive").invoke(enabled);
-
-
-        } catch (e) {
-
-
-            console.log("SetActive failed:", e);
-
-
-        }
-
-
-    }
-
-
-
-
-
-    function handleList(list: Il2Cpp.Object | null, enabled: boolean) {
-
-
-        try {
-
-
-            if (!list || list.isNull()) return;
-
-
-            const count = list.method<number>("get_Count").invoke();
-
-
-            for (let i = 0; i < count; i++) {
-
-
-                const go = list.method<Il2Cpp.Object>("get_Item").invoke(i);
-
-
-                if (go && !go.isNull()) safeSetActive(go, enabled);
-
-
-            }
-
-
-        } catch (e) {
-
-
-            console.log("handleList failed:", e);
-
-
-        }
-
-
-    }
-
-function enableByName(name: string): boolean {
-
-
-    const unity = Il2Cpp.domain.assembly("UnityEngine.CoreModule").image;
-
-
-    const GameObject = unity.class("UnityEngine.GameObject");
-
-
-    const Resources = unity.class("UnityEngine.Resources");
-
-
-
-
-
-    // FindObjectsOfTypeAll includes inactive objects
-
-
-    const all = Resources.method<Il2Cpp.Array<Il2Cpp.Object>>("FindObjectsOfTypeAll")
-
-
-        .invoke(GameObject.type.object);
-
-
-
-
-
-    let found = false;
-
-
-    for (const go of all) {
-
-
-        if (go.isNull()) continue;
-
-
-        const goName = go.method<Il2Cpp.String>("get_name").invoke().content;
-
-
-        if (goName !== name) continue;
-
-
-
-
-
-        // Skip prefabs/assets: scene objects have a valid scene handle
-
-
-        const scene = go.method<Il2Cpp.ValueType>("get_scene").invoke();
-
-
-        const valid = scene.method<boolean>("IsValid").invoke();
-
-
-        if (!valid) continue;
-
-
-
-
-
-        go.method("SetActive").invoke(true);
-
-
-        console.log(`Enabled ${name}`);
-
-
-        found = true;
-
-
-    }
-
-
-    return found;
-
-
-}
-
-    function PlayfabPatcher() {
-
-        const login = getLogin();
-
-
-        if (!login) return;
-
-        //handleList(login.field<Il2Cpp.Object>("specialitems").value, true);
-
-
-        //handleList(login.field<Il2Cpp.Object>("disableitems").value, false);
-
-        enableByName("mody");
-        enableByName("Tvboy");
-    }
-    Il2Cpp.mainThread.schedule(PlayfabPatcher);
-
 
   function renderMenuText(canvasObject, text: string = "", color: [number, number, number, number] = [1, 1, 1, 1], pos = zeroVector, size = oneVector) {
     const title = addComponent(createObject(zeroVector, identityQuaternion, oneVector, 3, [0, 0, 0, 0], getTransform(canvasObject)), Text);
@@ -954,14 +783,259 @@ function StickyPlatforms() {
 
   }
 
+
+
+
+  function enableStaffCosmeticsInMirror() {
+
+
+    // Keep cosmetic renderers active under mirror/cosmetic objects while Staff mode is open.
+
+
+    try {
+
+
+      const renderers = Object.method("FindObjectsOfType").inflate(Renderer).invoke();
+
+
+      let enabled = 0;
+
+
+      for (let i = 0; i < renderers.length; i++) {
+
+
+        try {
+
+
+          const renderer = renderers.get(i);
+
+
+          if (!renderer || renderer.isNull?.()) continue;
+
+
+          const go = renderer.method("get_gameObject").invoke();
+
+
+          if (!go || go.isNull?.()) continue;
+
+
+
+
+
+          let transform = getTransform(go);
+
+
+          let shouldEnable = false;
+
+
+          for (let depth = 0; depth < 10 && transform && !transform.isNull?.(); depth++) {
+
+
+            const parentGo = transform.method("get_gameObject").invoke();
+
+
+            if (parentGo && !parentGo.isNull?.()) {
+
+
+              const name = parentGo.method("get_name").invoke().toString().toLowerCase();
+
+
+              if (name.includes("mirror") || name.includes("cosmetic")) {
+
+
+                shouldEnable = true;
+
+
+                break;
+
+
+              }
+
+
+            }
+
+
+            transform = transform.method("get_parent").invoke();
+
+
+          }
+
+
+
+
+
+          if (shouldEnable) {
+
+
+            try { go.method("SetActive").invoke(true); } catch (_) {}
+
+
+            renderer.method("set_enabled").invoke(true);
+
+
+            enabled++;
+
+
+          }
+
+
+        } catch (_) {}
+
+
+      }
+
+
+      console.log("[Staff] Enabled " + enabled + " mirror/cosmetic renderer(s)");
+
+
+    } catch (e) {
+
+
+      console.log("[Staff] Mirror cosmetic pass failed: " + e);
+
+
+    }
+
+
+  }
+
+
+
+
+
+  function enableCCCosmeticsInRoom() {
+
+
+    // Enable renderers/objects that belong to the CC room or cosmetic system.
+
+
+    try {
+
+
+      const allRenderers = Object.method("FindObjectsOfType").inflate(Renderer).invoke();
+
+
+      let enabled = 0;
+
+
+      for (let i = 0; i < allRenderers.length; i++) {
+
+
+        try {
+
+
+          const renderer = allRenderers.get(i);
+
+
+          if (!renderer || renderer.isNull?.()) continue;
+
+
+          const go = renderer.method("get_gameObject").invoke();
+
+
+          if (!go || go.isNull?.()) continue;
+
+
+
+
+
+          let transform = getTransform(go);
+
+
+          let belongsToCC = false;
+
+
+          for (let depth = 0; depth < 12 && transform && !transform.isNull?.(); depth++) {
+
+
+            const parentGo = transform.method("get_gameObject").invoke();
+
+
+            if (parentGo && !parentGo.isNull?.()) {
+
+
+              const name = parentGo.method("get_name").invoke().toString().toLowerCase();
+
+
+              if (name === "cc" || name === "ccroom" || name.includes("charactercreator") || name.includes("character_creator") || name.includes("customization") || name.includes("cosmetic")) {
+
+
+                belongsToCC = true;
+
+
+                break;
+
+
+              }
+
+
+            }
+
+
+            transform = transform.method("get_parent").invoke();
+
+
+          }
+
+
+
+
+
+          if (belongsToCC) {
+
+
+            try { go.method("SetActive").invoke(true); } catch (_) {}
+
+
+            try { renderer.method("set_enabled").invoke(true); } catch (_) {}
+
+
+            enabled++;
+
+
+          }
+
+
+        } catch (_) {}
+
+
+      }
+
+
+      console.log("[Staff] Enabled " + enabled + " CC-room cosmetic renderer(s)");
+
+
+    } catch (e) {
+
+
+      console.log("[Staff] CC cosmetic pass failed: " + e);
+
+
+    }
+
+
+  }
+
+
+
+
+
   function OpenStaff() {
+
     const AllBoxColliders = Object.method("FindObjectsOfType").inflate(BoxCollider).invoke();
+
     for (let i = 0; i < AllBoxColliders.length; i++) {
+
       const Colid = AllBoxColliders.get(i);
+
       if (Colid.method("get_name").invoke().toString().includes("Cube")) {
         Colid.method("set_enabled").invoke(false);
       }
     }
+
+
+
+
 
     const objectsToDestroy = [
       "miroorcolideryeee",
@@ -976,10 +1050,111 @@ function StickyPlatforms() {
       "Plane (17)", "Plane (18)", "Plane (19)", "Plane (20)", "Cube (13)"
     ];
 
+
+
+
+
     for (let i = 0; i < objectsToDestroy.length; i++) {
+
+
       Destroy(GameObject.method("Find").invoke(Il2Cpp.string(objectsToDestroy[i])));
+
+
     }
-    PlayfabPatcher();
+    enableStaffCosmeticsInMirror();
+
+  }
+
+  function openCCRoom() {
+
+
+    // Keep cchroomBlocker in the scene, but move it far below the play area instead of destroying it.
+
+
+    try {
+
+
+      const blocker = GameObject.method("Find").invoke(Il2Cpp.string("cchroomBlocker"));
+
+
+      if (blocker && !blocker.isNull?.()) {
+
+
+        getTransform(blocker).method("set_position").invoke([0, -1000, 0]);
+
+
+        console.log("[Staff] Moved cchroomBlocker to [0,-1000,0]");
+
+
+      }
+
+
+    } catch (_) {}
+
+
+    let opened = 0;
+
+
+    try {
+
+
+      const all = Resources.method("FindObjectsOfTypeAll", 1).invoke(GameObject.type.object);
+
+
+      if (all && !all.isNull?.()) {
+
+
+        for (let i = 0; i < all.length; i++) {
+
+
+          try {
+
+
+            const go = all.get(i);
+
+
+            if (!go || go.isNull?.()) continue;
+
+
+            const name = go.method("get_name").invoke().toString();
+
+
+            if (/^(cc|ccroom)$/i.test(name) || /cosmetic|character.?creator|customi[sz]ation/i.test(name)) {
+
+
+              go.method("SetActive").invoke(true);
+
+
+              opened++;
+
+
+            }
+
+
+          } catch (_) {}
+
+
+        }
+
+
+      }
+
+
+    } catch (e) {
+
+
+      console.log("[Staff] CC scan error: " + e);
+
+
+    }
+
+
+    console.log(opened > 0 ? "[Staff] CC room opened (" + opened + " objects)" : "[Staff] CC room object not found");
+
+
+    enableCCCosmeticsInRoom();
+
+
   }
 
   //#endregion
@@ -1594,13 +1769,29 @@ try {
         method: () => { PhotonNetwork.method("SetMasterClient").invoke(PhotonNetwork.method("get_LocalPlayer").invoke()) },
         keepOn: false,
       }),
-
       new ButtonInfo({
         buttonText: "Open Staff",
-        method: () => {
-          OpenStaff()
-        },
-        keepOn: false,
+        toolTip: "opens the mirror",
+        method: () => { OpenStaff(); },
+        keepOn: false
+      }),
+      new ButtonInfo({
+        buttonText: "Open CC Room",
+        toolTip: "opens the CC room",
+        method: () => openCCRoom(),
+        keepOn: false
+      }),
+      new ButtonInfo({
+        buttonText: "Staff Cos In Mirror",
+        toolTip: "enables staff cosmetics to render in the mirror",
+        method: () => enableStaffCosmeticsInMirror(),
+        keepOn: false
+      }),
+      new ButtonInfo({
+        buttonText: "CC Cos In CC Room",
+        toolTip: "enables CC cosmetics to render in the CC room",
+        method: () => enableCCCosmeticsInRoom(),
+        keepOn: false
       }),
       new ButtonInfo({
         buttonText: "Rig Spam [G]",
@@ -1665,7 +1856,7 @@ try {
     ],
 [ // Credits
       new ButtonInfo({
-        buttonText: "that one guy",
+        buttonText: "GunyahJohn",
         method: () => {
 		// oil up
         },
@@ -1673,7 +1864,7 @@ try {
       }),   
 
       new ButtonInfo({
-        buttonText: "sside",
+        buttonText: "J0kerModz",
         method: () => {
 		// oil up
         },
@@ -1819,6 +2010,6 @@ try {
 
     return this.method("Update").invoke();
   };
-  console.log(`yo, supporter menu loaded lels have fun`);
+  console.log(`yo, menu loaded lels have fun`);
 
 }, "main");
