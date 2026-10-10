@@ -147,8 +147,6 @@ Il2Cpp.perform(() => {
   const Rigidbody = UnityEnginePhysics.class("UnityEngine.Rigidbody");
   const Physics = UnityEnginePhysics.class("UnityEngine.Physics");
   const SystemObject = Il2Cpp.corlib.class("System.Object");
-  const bybyeeeClass = AssemblyCSharp.class("bybyeee");
-  const PlayfabLogin = AssemblyCsharp.class("PlayfabManager");
 
   const Canvas = UnityEngineUIModule.class("UnityEngine.Canvas");
   const CanvasScaler = UnityEngineUI.class("UnityEngine.UI.CanvasScaler");
@@ -786,376 +784,63 @@ function StickyPlatforms() {
 
 
 
-  function enableStaffCosmeticsInMirror() {
-
-
-    // Keep cosmetic renderers active under mirror/cosmetic objects while Staff mode is open.
-
-
+function OpenStaff() {
     try {
+        const AllBoxColliders = Object.method("FindObjectsOfType").inflate(BoxCollider).invoke();
+        if (AllBoxColliders && !AllBoxColliders.isNull()) {
+            const length = AllBoxColliders.method("get_Length").invoke();
+            for (let i = 0; i < length; i++) {
+                try {
+                    const Colid = AllBoxColliders.method("GetValue").invoke(i);
+                    if (!Colid || Colid.isNull()) continue;
 
-
-      const renderers = Object.method("FindObjectsOfType").inflate(Renderer).invoke();
-
-
-      let enabled = 0;
-
-
-      for (let i = 0; i < renderers.length; i++) {
-
-
-        try {
-
-
-          const renderer = renderers.get(i);
-
-
-          if (!renderer || renderer.isNull?.()) continue;
-
-
-          const go = renderer.method("get_gameObject").invoke();
-
-
-          if (!go || go.isNull?.()) continue;
-
-
-
-
-
-          let transform = getTransform(go);
-
-
-          let shouldEnable = false;
-
-
-          for (let depth = 0; depth < 10 && transform && !transform.isNull?.(); depth++) {
-
-
-            const parentGo = transform.method("get_gameObject").invoke();
-
-
-            if (parentGo && !parentGo.isNull?.()) {
-
-
-              const name = parentGo.method("get_name").invoke().toString().toLowerCase();
-
-
-              if (name.includes("mirror") || name.includes("cosmetic")) {
-
-
-                shouldEnable = true;
-
-
-                break;
-
-
-              }
-
-
+                    const nameObj = Colid.method("get_name").invoke();
+                    if (nameObj && !nameObj.isNull() && nameObj.toString().includes("Cube")) {
+                        Colid.method("set_enabled").invoke(false);
+                    }
+                } catch (_) {}
             }
-
-
-            transform = transform.method("get_parent").invoke();
-
-
-          }
-
-
-
-
-
-          if (shouldEnable) {
-
-
-            try { go.method("SetActive").invoke(true); } catch (_) {}
-
-
-            renderer.method("set_enabled").invoke(true);
-
-
-            enabled++;
-
-
-          }
-
-
-        } catch (_) {}
-
-
-      }
-
-
-      console.log("[Staff] Enabled " + enabled + " mirror/cosmetic renderer(s)");
-
-
+        }
     } catch (e) {
-
-
-      console.log("[Staff] Mirror cosmetic pass failed: " + e);
-
-
+        console.log("[Staff] BoxCollider sweep failed: " + e);
     }
-
-
-  }
-
-
-
-
-
-  function enableCCCosmeticsInRoom() {
-
-
-    // Enable renderers/objects that belong to the CC room or cosmetic system.
-
-
-    try {
-
-
-      const allRenderers = Object.method("FindObjectsOfType").inflate(Renderer).invoke();
-
-
-      let enabled = 0;
-
-
-      for (let i = 0; i < allRenderers.length; i++) {
-
-
-        try {
-
-
-          const renderer = allRenderers.get(i);
-
-
-          if (!renderer || renderer.isNull?.()) continue;
-
-
-          const go = renderer.method("get_gameObject").invoke();
-
-
-          if (!go || go.isNull?.()) continue;
-
-
-
-
-
-          let transform = getTransform(go);
-
-
-          let belongsToCC = false;
-
-
-          for (let depth = 0; depth < 12 && transform && !transform.isNull?.(); depth++) {
-
-
-            const parentGo = transform.method("get_gameObject").invoke();
-
-
-            if (parentGo && !parentGo.isNull?.()) {
-
-
-              const name = parentGo.method("get_name").invoke().toString().toLowerCase();
-
-
-              if (name === "cc" || name === "ccroom" || name.includes("charactercreator") || name.includes("character_creator") || name.includes("customization") || name.includes("cosmetic")) {
-
-
-                belongsToCC = true;
-
-
-                break;
-
-
-              }
-
-
-            }
-
-
-            transform = transform.method("get_parent").invoke();
-
-
-          }
-
-
-
-
-
-          if (belongsToCC) {
-
-
-            try { go.method("SetActive").invoke(true); } catch (_) {}
-
-
-            try { renderer.method("set_enabled").invoke(true); } catch (_) {}
-
-
-            enabled++;
-
-
-          }
-
-
-        } catch (_) {}
-
-
-      }
-
-
-      console.log("[Staff] Enabled " + enabled + " CC-room cosmetic renderer(s)");
-
-
-    } catch (e) {
-
-
-      console.log("[Staff] CC cosmetic pass failed: " + e);
-
-
-    }
-
-
-  }
-
-
-
-
-
-  function OpenStaff() {
-
-    const AllBoxColliders = Object.method("FindObjectsOfType").inflate(BoxCollider).invoke();
-
-    for (let i = 0; i < AllBoxColliders.length; i++) {
-
-      const Colid = AllBoxColliders.get(i);
-
-      if (Colid.method("get_name").invoke().toString().includes("Cube")) {
-        Colid.method("set_enabled").invoke(false);
-      }
-    }
-
-
-
-
 
     const objectsToDestroy = [
-      "miroorcolideryeee",
-      "hahahahahhahahhaheheheh",
-      "AFJHDSUFHSDIUHHDSIUFHSIDOOR",
-      "thingcol",
-      "Cube (5)", "Plane", "Cube (9)", "Plane (1)", "Cube (3)", "Cube (4)", "Cube (6)",
-      "Plane (2)", "Plane (3)", "Cube (7)", "Plane (5)", "Cube (12)", "Plane (4)", "Cube (10)",
-      "Plane (6)", "Plane (7)", "Plane (9)", "Plane (8)", "Plane (10)", "Cube (11)", "Plane (11)",
-      "Plane (9)",
-      "Cube (8)", "Plane (12)", "Plane (13)", "Plane (14)", "Plane (15)", "Plane (16)",
-      "Plane (17)", "Plane (18)", "Plane (19)", "Plane (20)", "Cube (13)"
+        "miroorcolideryeee", "hahahahahhahahhaheheheh", "AFJHDSUFHSDIUHHDSIUFHSIDOOR", "thingcol",
+        "Cube (5)", "Plane", "Cube (9)", "Plane (1)", "Cube (3)", "Cube (4)", "Cube (6)",
+        "Plane (2)", "Plane (3)", "Cube (7)", "Plane (5)", "Cube (12)", "Plane (4)", "Cube (10)",
+        "Plane (6)", "Plane (7)", "Plane (9)", "Plane (8)", "Plane (10)", "Cube (11)", "Plane (11)",
+        "Cube (8)", "Plane (12)", "Plane (13)", "Plane (14)", "Plane (15)", "Plane (16)",
+        "Plane (17)", "Plane (18)", "Plane (19)", "Plane (20)", "Cube (13)"
     ];
 
-
-
-
-
     for (let i = 0; i < objectsToDestroy.length; i++) {
-
-
-      Destroy(GameObject.method("Find").invoke(Il2Cpp.string(objectsToDestroy[i])));
-
-
-    }
-    enableStaffCosmeticsInMirror();
-
-  }
-
-  function openCCRoom() {
-
-
-    // Keep cchroomBlocker in the scene, but move it far below the play area instead of destroying it.
-
-
-    try {
-
-
-      const blocker = GameObject.method("Find").invoke(Il2Cpp.string("cchroomBlocker"));
-
-
-      if (blocker && !blocker.isNull?.()) {
-
-
-        getTransform(blocker).method("set_position").invoke([0, -1000, 0]);
-
-
-        console.log("[Staff] Moved cchroomBlocker to [0,-1000,0]");
-
-
-      }
-
-
-    } catch (_) {}
-
-
-    let opened = 0;
-
-
-    try {
-
-
-      const all = Resources.method("FindObjectsOfTypeAll", 1).invoke(GameObject.type.object);
-
-
-      if (all && !all.isNull?.()) {
-
-
-        for (let i = 0; i < all.length; i++) {
-
-
-          try {
-
-
-            const go = all.get(i);
-
-
-            if (!go || go.isNull?.()) continue;
-
-
-            const name = go.method("get_name").invoke().toString();
-
-
-            if (/^(cc|ccroom)$/i.test(name) || /cosmetic|character.?creator|customi[sz]ation/i.test(name)) {
-
-
-              go.method("SetActive").invoke(true);
-
-
-              opened++;
-
-
+        try {
+            const targetObj = GameObject.method("Find").invoke(Il2Cpp.string(objectsToDestroy[i]));
+            if (targetObj && !targetObj.isNull()) {
+                Destroy(targetObj);
             }
-
-
-          } catch (_) {}
-
-
-        }
-
-
-      }
-
-
-    } catch (e) {
-
-
-      console.log("[Staff] CC scan error: " + e);
-
-
+        } catch (_) {}
     }
+}
 
-
-    console.log(opened > 0 ? "[Staff] CC room opened (" + opened + " objects)" : "[Staff] CC room object not found");
-
-
-    enableCCCosmeticsInRoom();
-
-
+  let cosmeticsUnlocked = false;
+  function UnlockAllCosmetics() {
+    if (cosmeticsUnlocked) return;
+    try {
+      let C = null;
+      try { C = AssemblyCSharp.class("CosmeticSO"); } catch (_) {}
+      if (!C) try { C = AssemblyCSharp.class("BigScary.CloudItems.CosmeticSO"); } catch (_) {}
+      if (!C) return;
+      const all = Resources.method("FindObjectsOfTypeAll", 1).inflate(C).invoke();
+      if (all == null || all.isNull()) return;
+      for (let i = 0; i < all.length; i++) {
+        try { all.get(i).field("isAlwaysOwned").value = true; } catch (_) {}
+      }
+      cosmeticsUnlocked = true;
+    } catch (_) {}
   }
+  function LockCosmetics() { cosmeticsUnlocked = false; }
 
   //#endregion
 
@@ -1683,12 +1368,6 @@ function BugRigGun() {
     ],
 
     [ // Misc Mods
-      new ButtonInfo({ 
-      buttonText: "Wireless Fucks All Name",
-       method: () => {
-      PhotonNetwork.method("set_NickName").invoke(Il2Cpp.string("Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All Wireless Fucks All ")) 
-     },
-   }),
 
       new ButtonInfo({ 
       buttonText: "Bright Name",
@@ -1776,21 +1455,9 @@ try {
         keepOn: false
       }),
       new ButtonInfo({
-        buttonText: "Open CC Room",
-        toolTip: "opens the CC room",
-        method: () => openCCRoom(),
-        keepOn: false
-      }),
-      new ButtonInfo({
-        buttonText: "Staff Cos In Mirror",
-        toolTip: "enables staff cosmetics to render in the mirror",
-        method: () => enableStaffCosmeticsInMirror(),
-        keepOn: false
-      }),
-      new ButtonInfo({
-        buttonText: "CC Cos In CC Room",
-        toolTip: "enables CC cosmetics to render in the CC room",
-        method: () => enableCCCosmeticsInRoom(),
+        buttonText: "Playfab Patcher",
+        toolTip: "patches playfab login to unlock every cosmetic",
+        method: () => UnlockAllCosmetics(),
         keepOn: false
       }),
       new ButtonInfo({
