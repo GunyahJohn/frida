@@ -447,7 +447,7 @@ Il2Cpp.perform(() => {
         Quaternion.method("Euler").overload("System.Single","System.Single","System.Single").invoke(0, 0, 0)
       );
     } catch (e) {
-      console.log("[Envo] renderReference failed: " + e);
+      console.log("[-] renderReference failed: " + e);
       reference = null;
       referenceCollider = null;
       refText = null;
@@ -547,7 +547,7 @@ Il2Cpp.perform(() => {
       recenterMenu();
       updateIndicator();
     } catch (e) {
-      console.log("[Envo] renderMenu failed: " + e);
+      console.log("[-] renderMenu failed: " + e);
       try { if (menu != null && !menu.isNull()) Destroy(menu); } catch (_) {}
       menu = null;
     }
@@ -1152,7 +1152,7 @@ Il2Cpp.perform(() => {
     try {
       const lp = PhotonNetwork.method("get_LocalPlayer").invoke();
       if (!lp) return;
-      lp.method("set_UserId").invoke(Il2Cpp.string("Envo_" + Math.floor(1000 + Math.random() * 9000)));
+      lp.method("set_UserId").invoke(Il2Cpp.string("Gunyah_" + Math.floor(1000 + Math.random() * 9000)));
     } catch (_) {}
   }
 
@@ -1259,7 +1259,7 @@ Il2Cpp.perform(() => {
       if (others && others.length > 0) {
         for (let i = 0; i < others.length; i++) {
           PhotonNetwork.method("SetMasterClient").invoke(PhotonNetwork.method("get_LocalPlayer").invoke());
-          others.get(i).method("set_NickName").invoke(Il2Cpp.string("Envo"));
+          others.get(i).method("set_NickName").invoke(Il2Cpp.string("GunyahJohn"));
         }
       }
     } catch (_) {}
@@ -1388,7 +1388,7 @@ Il2Cpp.perform(() => {
       let target = null;
       for (const m of methods) if (m.parameters[0].type.name.includes("String")) { target = m; break; }
       if (target) target.invoke(Il2Cpp.string("Assets/Scenes/Extraction/Extraction_PylonMap.unity"), 1);
-    } catch (e) { console.log("[Envo] bypass failed: " + e); }
+    } catch (e) { console.log("[-] bypass failed: " + e); }
   }
 
   function SpeedUpMonsters() {
@@ -1693,7 +1693,7 @@ Il2Cpp.perform(() => {
     ],
 
     [ // 13: Credits
-      new ButtonInfo({ buttonText: "Envo", method: () => {}, keepOn: false }),
+      new ButtonInfo({ buttonText: "GunyahJohn", method: () => {}, keepOn: false }),
     ],
   ];
 
